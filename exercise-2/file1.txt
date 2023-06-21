@@ -1,0 +1,16 @@
+Per-drive working directories on Windows
+On Windows, Node.js follows the concept of per-drive working directory. This behavior can be observed when using a drive path without a backslash. 
+For example fs.readdirSync('C:\\') can potentially return a different result than fs.readdirSync('C:').
+ For more information, see this MSDN page.
+
+File descriptors
+On POSIX systems, for every process, the kernel maintains a table of currently open files and resources. Each open file is assigned a simple numeric identifier called a file descriptor.
+ At the system-level, all file system operations use these file descriptors to identify and track each specific file. Windows systems use a different but 
+ conceptually similar mechanism for tracking resources.
+  To simplify things for users, Node.js abstracts away the differences between operating systems and assigns all open files a numeric file descriptor.
+
+The callback-based fs.open(), and synchronous fs.openSync() methods open a file and allocate a new file descriptor. Once allocated, the file descriptor may be used to read data from,
+ write data to, or request information about the file.
+
+Operating systems limit the number of file descriptors that may be open at any given time so it is critical to close the descriptor when operations are completed.
+ Failure to do so will result in a memory leak that will eventually cause an application to crash.
