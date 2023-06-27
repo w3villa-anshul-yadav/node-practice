@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const DBConstants = require("../config/DBconfig");
 
 const sequelize = new Sequelize(
@@ -16,8 +16,8 @@ sequelize
     .then(() => {
         console.log("Connected to DataBase");
     })
-    .catch(() => {
-        throw new Error("DataBase did not Connect properly");
+    .catch((err) => {
+        console.log(err);
         process.exit(1);
     });
 
@@ -26,8 +26,10 @@ const DB = {};
 DB.Sequelize = Sequelize;
 DB.sequelize = sequelize;
 
-DB.task = require("./Task.js")(sequelize);
+DB.Task = require("./Task.js")(sequelize);
 
-DB.sequelize.sync({ force: false });
+DB.sequelize.sync({ force: false }).then(() => {
+    console.log("DB SYNCed SucessFully");
+});
 
 module.exports = DB;
