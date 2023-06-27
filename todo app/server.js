@@ -1,8 +1,7 @@
 const express = require("express");
 const app = express();
 
-require("dotenv").config();
-console.log(process.env.DB_PASSWORD);
+require("dotenv").config({ path: "../.env" });
 
 //DB Connection
 const DB = require("./models/index");

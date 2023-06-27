@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const DBConstants = require("../config/DBconfig");
-console.log("hwy",DBConstants.PASSWORD);
+console.log("hwy", DBConstants.PASSWORD);
 const sequelize = new Sequelize(
     DBConstants.DATABASE_NAME,
     DBConstants.USER,
@@ -8,7 +8,7 @@ const sequelize = new Sequelize(
     {
         host: DBConstants.HOST,
         dialect: DBConstants.DIALECT,
-        password: "password",
+        password: DBConstants.PASSWORD,
     }
 );
 
