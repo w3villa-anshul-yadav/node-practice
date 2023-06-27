@@ -30,6 +30,8 @@ DB.sequelize = sequelize;
 
 DB.Task = require("./Task.js")(sequelize);
 DB.User = require("./User.js")(sequelize);
+DB.User.hasMany(DB.Task);
+DB.Task.belongsTo(DB.User);
 
 DB.sequelize.sync({ force: false }).then(() => {
     console.log("DB SYNCed SucessFully");

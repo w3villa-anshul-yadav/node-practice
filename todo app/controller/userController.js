@@ -65,7 +65,7 @@ const loginUser = asyncHandler(async (req, res) => {
                     },
                 },
                 process.env.SECTRET_ACCESS_KEY,
-                { expiresIn: "1m" }
+                { expiresIn: "10m" }
             );
         } catch (error) {
             console.log(error);
@@ -86,8 +86,9 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const currentUser = asyncHandler(async (req, res) => {
     res.status(200).json({
-        data: "",
-        message: "Current User",
+        status: true,
+        user: req.user,
+        message: "Current User Details",
     });
 });
 
