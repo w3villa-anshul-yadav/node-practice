@@ -1,6 +1,6 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const DBConstants = require("../config/DBconfig");
-console.log("hwy", DBConstants.PASSWORD);
+
 const sequelize = new Sequelize(
     DBConstants.DATABASE_NAME,
     DBConstants.USER,
@@ -29,6 +29,7 @@ DB.Sequelize = Sequelize;
 DB.sequelize = sequelize;
 
 DB.Task = require("./Task.js")(sequelize);
+DB.User = require("./User.js")(sequelize);
 
 DB.sequelize.sync({ force: false }).then(() => {
     console.log("DB SYNCed SucessFully");
