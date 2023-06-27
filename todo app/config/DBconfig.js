@@ -1,7 +1,7 @@
 module.exports = {
-    DATABASE_NAME: "ToDo",
+    HOST: "localhost",
     USER: "root",
     PASSWORD: process.env.DB_PASSWORD,
-    HOST: "localhost",
+    DATABASE_NAME: "todo",
     DIALECT: "mysql",
 };
