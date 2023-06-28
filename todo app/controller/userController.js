@@ -5,6 +5,23 @@ const jwt = require("jsonwebtoken");
 const DB = require("../models");
 const User = DB.User;
 
+//utility function
+const generateToken = (user) => {
+    return jwt.sign(
+        {
+            user: {
+                email: user.email,
+                name: user.name,
+                id: user.id,
+            },
+        },
+        process.env.SECTRET_ACCESS_KEY,
+        { expiresIn: "10m" }
+    );
+};
+
+// controller function
+
 // @discription Register New User
 // @route POST api/user/register
 // @access public
@@ -41,11 +58,10 @@ const registerUser = asyncHandler(async (req, res) => {
             });
         }
     } catch (error) {
-        res.status(400).json({
-            status: false,
-            message: "User not Registred",
-            error,
-        });
+        console.log(error);
+        return res
+            .status(500)
+            .json({ status: false, msg: "Internal server error" });
     }
 });
 
@@ -60,26 +76,33 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new Error("All fields Are Required");
     }
 
-    const user = await User.findOne({
-        where: {
-            email,
-        },
-    });
+    try {
+        const user = await User.findOne({
+            where: {
+                email,
+            },
+        });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-        const token = generateToken(user);
-        console.log("token generated");
+        if (user && (await bcrypt.compare(password, user.password))) {
+            const token = generateToken(user);
+            console.log("token generated");
 
-        if (token) {
-            res.status(200).json({
-                status: true,
-                message: "User logged In",
-                token,
-            });
+            if (token) {
+                res.status(200).json({
+                    status: true,
+                    message: "User logged In",
+                    token,
+                });
+            }
+        } else {
+            res.status(400);
+            throw new Error("email or password did not matched");
         }
-    } else {
-        res.status(400);
-        throw new Error("email or password did not matched");
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(500)
+            .json({ status: false, msg: "Internal server error" });
     }
 });
 
@@ -93,19 +116,5 @@ const currentUser = asyncHandler(async (req, res) => {
         message: "Current User Details",
     });
 });
-
-const generateToken = (user) => {
-    return jwt.sign(
-        {
-            user: {
-                email: user.email,
-                name: user.name,
-                id: user.id,
-            },
-        },
-        process.env.SECTRET_ACCESS_KEY,
-        { expiresIn: "10m" }
-    );
-};
 
 module.exports = { registerUser, loginUser, currentUser };

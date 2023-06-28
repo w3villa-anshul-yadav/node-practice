@@ -9,14 +9,14 @@ module.exports = (req, res, next) => {
         token = req.headers.authorization.split(" ")[1];
         jwt.verify(token, process.env.SECTRET_ACCESS_KEY, (err, decode) => {
             if (err) {
-                res.status(400);
+                res.status(401);
                 throw new Error("User is Not Authorized");
             }
             req.user = decode.user;
         });
         next();
     } else {
-        res.status(400);
+        res.status(401);
         throw new Error("User is not Atuthorized or Token  is missing");
     }
 };

@@ -3,37 +3,75 @@ const asyncHandler = require("express-async-handler");
 const DB = require("../models");
 const Task = DB.Task;
 
+//utility functions
+// for all /api/task/:id checks whether task exists or not
+const noTaskFound = asyncHandler(async (req, res) => {
+    try {
+        const task = await Task.findAll({
+            where: { id: req.params.id },
+        });
+
+        if (task.length === 0) {
+            res.status(404).json({ status: false, message: "No Task Found" });
+            return true;
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(404).json({ status: false, error });
+        return true;
+    }
+    return false;
+});
+
+//controller functions
 // @discription get All Task
 // @route GET api/task
 // @access private
 const getTasks = asyncHandler(async (req, res) => {
-    const tasks = await Task.findAll({ where: { UserId: req.user.id } });
-    res.status(200).json({
-        status: true,
-        message: "All Task Created By User",
-        tasks,
-    });
+    try {
+        const tasks = await Task.findAll({ where: { UserId: req.user.id } });
+
+        res.status(200).json({
+            status: true,
+            message: "All Task Created By User",
+            tasks,
+        });
+    } catch (error) {
+        console.error(error);
+        return res
+            .status(500)
+            .json({ status: false, msg: "Internal server error" });
+    }
 });
 
 // @discription get  Task by ID
 // @route GET api/task/:id
 // @access private
 const getTask = asyncHandler(async (req, res) => {
-    await noTaskFound(req, res);
+    if (!(await noTaskFound(req, res))) {
+        try {
+            const task = await Task.findAll({
+                where: { id: req.params.id, UserId: req.user.id },
+            });
 
-    const task = await Task.findAll({
-        where: { id: req.params.id, UserId: req.user.id },
-    });
-
-    if (task.length === 0) {
-        res.status(400);
-        throw new Error("You are not Authorized To do this Task");
-    } else {
-        res.status(200).json({
-            status: true,
-            message: `Task with id : ${req.params.id}`,
-            task,
-        });
+            if (task.length === 0) {
+                res.status(403).json({
+                    status: false,
+                    message: "You are not Authorized To do this Task",
+                });
+            } else {
+                res.status(200).json({
+                    status: true,
+                    message: `Task with id : ${req.params.id}`,
+                    task,
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            return res
+                .status(500)
+                .json({ status: false, msg: "Internal server error" });
+        }
     }
 });
 
@@ -57,8 +95,10 @@ const createTask = asyncHandler(async (req, res) => {
         console.log("Task Created");
         res.status(200).json(task);
     } catch (error) {
-        res.status(400);
-        throw new Error(error);
+        console.error(error);
+        return res
+            .status(500)
+            .json({ status: false, msg: "Internal server error" });
     }
 });
 
@@ -67,30 +107,37 @@ const createTask = asyncHandler(async (req, res) => {
 // @access private
 const updateTask = asyncHandler(async (req, res) => {
     const { title, description } = req.body;
-    await noTaskFound(req, res);
+    if (!(await noTaskFound(req, res))) {
+        try {
+            const task = await Task.findAll({
+                where: { id: req.params.id, UserId: req.user.id },
+            });
 
-    const task = await Task.findAll({
-        where: { id: req.params.id, UserId: req.user.id },
-    });
+            if (task.length !== 0) {
+                const count = await Task.update(
+                    { title, description },
+                    { where: { id: req.params.id } }
+                );
 
-    if (task.length !== 0) {
-        const count = await Task.update(
-            { title, description },
-            { where: { id: req.params.id } }
-        );
+                const updatedTask = await Task.findAll({
+                    where: { id: req.params.id, UserId: req.user.id },
+                });
 
-        const updatedTask = await Task.findAll({
-            where: { id: req.params.id, UserId: req.user.id },
-        });
-
-        res.status(200).json({
-            status: true,
-            message: `Number of Task Updated: ${count}`,
-            task: updatedTask,
-        });
-    } else {
-        res.status(400);
-        throw new Error("You are not Authorized To do this Task");
+                res.status(200).json({
+                    status: true,
+                    message: `Number of Task Updated: ${count}`,
+                    task: updatedTask,
+                });
+            } else {
+                res.status(403);
+                throw new Error("You are not Authorized To do this Task");
+            }
+        } catch (error) {
+            console.error(error);
+            return res
+                .status(500)
+                .json({ status: false, msg: "Internal server error" });
+        }
     }
 });
 
@@ -98,32 +145,27 @@ const updateTask = asyncHandler(async (req, res) => {
 // @route DELETE api/task/:id
 // @access private
 const deleteTask = asyncHandler(async (req, res) => {
-    await noTaskFound(req, res);
+    if (!(await noTaskFound(req, res))) {
+        try {
+            const count = await Task.destroy({
+                where: { id: req.params.id, UserId: req.user.id },
+            });
 
-    const count = await Task.destroy({
-        where: { id: req.params.id, UserId: req.user.id },
-    });
-
-    if (count) {
-        res.status(200).json({
-            status: true,
-            message: `Number of Task Deleted: ${count}`,
-        });
-    } else {
-        res.status(400);
-        throw new Error("You are not Authorized To do this Task");
-    }
-});
-
-// for all /api/task/:id checks whether task exists or not
-const noTaskFound = asyncHandler(async (req, res) => {
-    const task = await Task.findAll({
-        where: { id: req.params.id },
-    });
-
-    if (task.length === 0) {
-        res.status(404);
-        throw new Error("No Task Found");
+            if (count) {
+                res.status(200).json({
+                    status: true,
+                    message: `Number of Task Deleted: ${count}`,
+                });
+            } else {
+                res.status(403);
+                throw new Error("You are not Authorized To do this Task");
+            }
+        } catch (error) {
+            console.error(error);
+            return res
+                .status(500)
+                .json({ status: false, msg: "Internal server error" });
+        }
     }
 });
 
