@@ -3,7 +3,7 @@ const Contact = require("../models/contactModel");
 
 // @discription get all contacts
 // @route GET api/contacts/
-// @access public
+// @access private
 
 const getContacts = asyncHandler(async (request, response) => {
     const contacts = await Contact.find({ user_id: request.user.id });
@@ -13,14 +13,14 @@ const getContacts = asyncHandler(async (request, response) => {
     }
     response.status(200).json({
         status: true,
-        contacts,
         message: "All Contact fetched Sucessfully",
+        contacts,
     });
 });
 
 // @discription get contact  with id
 // @route GET api/contacts/id
-// @access public
+// @access private
 
 const getContact = asyncHandler(async (request, response) => {
     const contact = await Contact.findById(request.params.id);
@@ -36,14 +36,14 @@ const getContact = asyncHandler(async (request, response) => {
 
     response.status(200).json({
         status: true,
-        contact,
         message: "Contact fetched Sucessfully",
+        contact,
     });
 });
 
 // @discription create new Contact
 // @route POST api/contacts/
-// @access public
+// @access private
 
 const createContact = asyncHandler(async (request, response) => {
     const { name, email, phone } = request.body;
@@ -58,17 +58,16 @@ const createContact = asyncHandler(async (request, response) => {
         phone,
         user_id: request.user.id,
     });
-    console.log(`content of body is ${request.body}`);
-    response.status(200).json({
+     response.status(200).json({
         status: true,
-        contact,
         message: "Contact Created Sucessfully",
+        contact,
     });
 });
 
 // @discription update contact
 // @route PUT api/contacts/id
-// @access public
+// @access private
 
 const updateContact = asyncHandler(async (request, response) => {
     const contact = await Contact.findById(request.params.id);
@@ -96,14 +95,14 @@ const updateContact = asyncHandler(async (request, response) => {
     );
     response.status(200).json({
         status: true,
-        updatedContact,
         message: "Contact Updated Sucessfully",
+        updatedContact,
     });
 });
 
 // @discription Delete Contact
 // @route DELETE api/contacts/id
-// @access public
+// @access private
 
 const deleteContact = asyncHandler(async (request, response) => {
     const contact = await Contact.findById(request.params.id);
@@ -121,8 +120,8 @@ const deleteContact = asyncHandler(async (request, response) => {
     await Contact.deleteOne({ _id: request.params.id });
     response.status(200).json({
         status: true,
-        deletedContact: contact,
         message: "Contact Deleted Sucessfully",
+        deletedContact: contact,
     });
 });
 

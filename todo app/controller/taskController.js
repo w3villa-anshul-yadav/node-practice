@@ -1,7 +1,7 @@
+const asyncHandler = require("express-async-handler");
+
 const DB = require("../models");
 const Task = DB.Task;
-
-const asyncHandler = require("express-async-handler");
 
 // @discription get All Task
 // @route GET api/task
@@ -15,7 +15,7 @@ const getTasks = asyncHandler(async (req, res) => {
     });
 });
 
-// @discription get one Task by ID
+// @discription get  Task by ID
 // @route GET api/task/:id
 // @access private
 const getTask = asyncHandler(async (req, res) => {
@@ -24,6 +24,7 @@ const getTask = asyncHandler(async (req, res) => {
     const task = await Task.findAll({
         where: { id: req.params.id, UserId: req.user.id },
     });
+
     if (task.length === 0) {
         res.status(400);
         throw new Error("You are not Authorized To do this Task");
@@ -41,6 +42,7 @@ const getTask = asyncHandler(async (req, res) => {
 // @access private
 const createTask = asyncHandler(async (req, res) => {
     const { title, description } = req.body;
+
     if (!title || !description) {
         res.status(400);
         throw new Error("All fields Are Required");
@@ -51,6 +53,7 @@ const createTask = asyncHandler(async (req, res) => {
             description,
             UserId: req.user.id,
         });
+
         console.log("Task Created");
         res.status(200).json(task);
     } catch (error) {
@@ -64,10 +67,6 @@ const createTask = asyncHandler(async (req, res) => {
 // @access private
 const updateTask = asyncHandler(async (req, res) => {
     const { title, description } = req.body;
-    if (!title || !description) {
-        res.status(400);
-        throw new Error("All fields Are Required");
-    }
     await noTaskFound(req, res);
 
     const task = await Task.findAll({
@@ -79,9 +78,11 @@ const updateTask = asyncHandler(async (req, res) => {
             { title, description },
             { where: { id: req.params.id } }
         );
+
         const updatedTask = await Task.findAll({
             where: { id: req.params.id, UserId: req.user.id },
         });
+
         res.status(200).json({
             status: true,
             message: `Number of Task Updated: ${count}`,
@@ -98,9 +99,11 @@ const updateTask = asyncHandler(async (req, res) => {
 // @access private
 const deleteTask = asyncHandler(async (req, res) => {
     await noTaskFound(req, res);
+
     const count = await Task.destroy({
         where: { id: req.params.id, UserId: req.user.id },
     });
+
     if (count) {
         res.status(200).json({
             status: true,
@@ -117,10 +120,11 @@ const noTaskFound = asyncHandler(async (req, res) => {
     const task = await Task.findAll({
         where: { id: req.params.id },
     });
+
     if (task.length === 0) {
         res.status(404);
         throw new Error("No Task Found");
-    } 
+    }
 });
 
 module.exports = { getTask, getTasks, createTask, updateTask, deleteTask };

@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+
 module.exports = (req, res, next) => {
     let authorizationHeader =
         req.headers.authorization || req.headers.Authorization;
@@ -13,9 +14,9 @@ module.exports = (req, res, next) => {
             }
             req.user = decode.user;
         });
+        next();
     } else {
         res.status(400);
         throw new Error("User is not Atuthorized or Token  is missing");
     }
-    next();
 };

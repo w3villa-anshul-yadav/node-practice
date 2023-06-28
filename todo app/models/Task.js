@@ -1,4 +1,5 @@
 const { DataTypes } = require("sequelize");
+
 module.exports = (sequelize) => {
     const Task = sequelize.define("Task", {
         title: {

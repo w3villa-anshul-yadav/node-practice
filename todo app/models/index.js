@@ -34,7 +34,7 @@ DB.User.hasMany(DB.Task);
 DB.Task.belongsTo(DB.User);
 
 DB.sequelize.sync({ force: false }).then(() => {
-    console.log("DB SYNCed SucessFully");
+    console.log("DB Synced SucessFully");
 });
 
 module.exports = DB;

@@ -1,9 +1,13 @@
 const asyncHandler = require("express-async-handler");
-const DB = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
+const DB = require("../models");
 const User = DB.User;
 
+// @discription Register New User
+// @route POST api/user/register
+// @access public
 const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -11,6 +15,7 @@ const registerUser = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error("All fields Are Required");
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
@@ -21,14 +26,18 @@ const registerUser = asyncHandler(async (req, res) => {
         });
         if (user) {
             console.log("User Created");
+
+            const token = generateToken(user);
+
             res.status(201).json({
+                message: "User Created",
+                status: true,
+                token,
                 data: {
                     name: user.name,
                     email: user.email,
                     id: user.id,
                 },
-                message: "User Created",
-                status: true,
             });
         }
     } catch (error) {
@@ -40,37 +49,27 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 });
 
+// @discription Login  User
+// @route POST api/user/login
+// @access public
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
+
     if (!email || !password) {
         res.status(400);
         throw new Error("All fields Are Required");
     }
-    let user;
 
-    user = await User.findOne({
+    const user = await User.findOne({
         where: {
             email,
         },
     });
+
     if (user && (await bcrypt.compare(password, user.password))) {
-        let token;
-        try {
-            token = jwt.sign(
-                {
-                    user: {
-                        email: user.email,
-                        name: user.name,
-                        id: user.id,
-                    },
-                },
-                process.env.SECTRET_ACCESS_KEY,
-                { expiresIn: "10m" }
-            );
-        } catch (error) {
-            console.log(error);
-        }
+        const token = generateToken(user);
         console.log("token generated");
+
         if (token) {
             res.status(200).json({
                 status: true,
@@ -84,6 +83,9 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 });
 
+// @discription Register New User
+// @route POST api/user/current
+// @access private
 const currentUser = asyncHandler(async (req, res) => {
     res.status(200).json({
         status: true,
@@ -91,5 +93,19 @@ const currentUser = asyncHandler(async (req, res) => {
         message: "Current User Details",
     });
 });
+
+const generateToken = (user) => {
+    return jwt.sign(
+        {
+            user: {
+                email: user.email,
+                name: user.name,
+                id: user.id,
+            },
+        },
+        process.env.SECTRET_ACCESS_KEY,
+        { expiresIn: "10m" }
+    );
+};
 
 module.exports = { registerUser, loginUser, currentUser };

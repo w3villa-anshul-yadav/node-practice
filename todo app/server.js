@@ -1,7 +1,6 @@
-const express = require("express");
-const app = express();
-
-require("dotenv").config({ path: "../.env" });
+"use strict";
+require("dotenv").config();
+const port = process.env.PORT;
 
 //DB Connection
 const DB = require("./models/index");
@@ -12,15 +11,21 @@ const errorHandlerMiddware = require("./middleWares/errorHandlerMiddware");
 //   Routes
 const taskRoutes = require("./routes/taskRoutes");
 const userRoutes = require("./routes/userRoutes");
-//middleWares
 
+//express app
+const express = require("express");
+const app = express();
+
+//middleWares
 app.use(express.json());
+
+//API Routes
 app.use("/api/task", taskRoutes);
 app.use("/api/user", userRoutes);
+
+//error handler middlewares
 app.use(noRoutesMiddleWare);
 app.use(errorHandlerMiddware);
-
-const port = process.env.PORT;
 
 app.listen(port, () => {
     console.log(`Server Started at : http://127.0.0.1:${port}`);

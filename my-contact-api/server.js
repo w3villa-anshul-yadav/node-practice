@@ -1,7 +1,6 @@
 "use strict";
-const express = require("express");
-const app = express();
 require("dotenv").config();
+const port = process.env.PORT || 5000;
 
 //database connection
 const conncetDB = require("./config/DBConnection");
@@ -9,17 +8,27 @@ conncetDB();
 
 //error handler middleware
 const errorHandler = require("./middleWare/errorHandler");
+const noRoutesMiddleWare = require("./middleWare/noRoutesMiddleWare");
 
 //routes
 const contactRoutes = require("./routes/contactRoutes");
 const userRoutes = require("./routes/userRoutes");
 
-app.use(express.json());
-app.use("/api/contacts", contactRoutes);
-app.use("/api/user", userRoutes);
-app.use(errorHandler);
+// express app
+const express = require("express");
+const app = express();
 
-const port = process.env.PORT || 5000;
+app.use(express.json());
+
+//contact Rout
+app.use("/api/contacts", contactRoutes);
+
+// User Rout
+app.use("/api/user", userRoutes);
+
+//error handler middlewares
+app.use(noRoutesMiddleWare);
+app.use(errorHandler);
 
 app.listen(port, (err) => {
     if (err) {

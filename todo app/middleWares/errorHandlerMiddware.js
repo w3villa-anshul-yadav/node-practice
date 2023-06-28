@@ -1,5 +1,5 @@
-const express = require("express");
 const statusCode = require("../constants");
+
 const errorHandler = (err, req, res, next) => {
     const receivedStatusCode = res.statusCode || 500;
     switch (receivedStatusCode) {
