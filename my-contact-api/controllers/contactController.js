@@ -1,21 +1,52 @@
 const asyncHandler = require("express-async-handler");
 const Contact = require("../models/contactModel");
 
+//utility functions
+
+const checkContactAvilability = (contact, response) => {
+    if (!contact) {
+        response
+            .status(404)
+            .json({ status: false, message: "Contact not found" });
+        return false;
+    }
+    return true;
+};
+
+const checkUserAuthorization = (contact, request, response) => {
+    if (contact.user_id.toString() !== request.user.id) {
+        response.status(403).json({
+            status: false,
+            message: "Unauthorized Access to Contacts",
+        });
+        return false;
+    }
+    return true;
+};
+
+// controller functions
+
 // @discription get all contacts
 // @route GET api/contacts/
 // @access private
 
 const getContacts = asyncHandler(async (request, response) => {
-    const contacts = await Contact.find({ user_id: request.user.id });
-    if (!contacts) {
-        response.status(400);
-        throw new Error("no contact found");
+    try {
+        const contacts = await Contact.find({ user_id: request.user.id });
+
+        if (checkContactAvilability(contacts, response)) {
+            response.status(200).json({
+                status: true,
+                message: " Contact fetched Sucessfully",
+                contacts,
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return response
+            .status(500)
+            .json({ status: false, msg: "Internal server error" });
     }
-    response.status(200).json({
-        status: true,
-        message: "All Contact fetched Sucessfully",
-        contacts,
-    });
 });
 
 // @discription get contact  with id
@@ -23,22 +54,25 @@ const getContacts = asyncHandler(async (request, response) => {
 // @access private
 
 const getContact = asyncHandler(async (request, response) => {
-    const contact = await Contact.findById(request.params.id);
+    try {
+        const contact = await Contact.findById(request.params.id);
 
-    if (!contact) {
-        response.status(404);
-        throw new Error("Contact not found");
+        if (
+            checkContactAvilability(contact, response) &&
+            checkUserAuthorization(contact, request, response)
+        ) {
+            response.status(200).json({
+                status: true,
+                message: "Contact fetched Sucessfully",
+                contact,
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return response
+            .status(500)
+            .json({ status: false, msg: "Internal server error" });
     }
-    if (contact.user_id.toString() !== request.user.id) {
-        response.status(403);
-        throw new Error("Unauthorized Access to Contacts");
-    }
-
-    response.status(200).json({
-        status: true,
-        message: "Contact fetched Sucessfully",
-        contact,
-    });
 });
 
 // @discription create new Contact
@@ -47,22 +81,30 @@ const getContact = asyncHandler(async (request, response) => {
 
 const createContact = asyncHandler(async (request, response) => {
     const { name, email, phone } = request.body;
+
     if (!name || !email || !phone) {
         response.status(400);
         throw new Error("All fields are required");
     }
 
-    const contact = await Contact.create({
-        name,
-        email,
-        phone,
-        user_id: request.user.id,
-    });
-     response.status(200).json({
-        status: true,
-        message: "Contact Created Sucessfully",
-        contact,
-    });
+    try {
+        const contact = await Contact.create({
+            name,
+            email,
+            phone,
+            user_id: request.user.id,
+        });
+        response.status(200).json({
+            status: true,
+            message: "Contact Created Sucessfully",
+            contact,
+        });
+    } catch (err) {
+        console.error(err);
+        return response
+            .status(500)
+            .json({ status: false, msg: "Internal server error" });
+    }
 });
 
 // @discription update contact
@@ -70,34 +112,31 @@ const createContact = asyncHandler(async (request, response) => {
 // @access private
 
 const updateContact = asyncHandler(async (request, response) => {
-    const contact = await Contact.findById(request.params.id);
+    try {
+        const contact = await Contact.findById(request.params.id);
 
-    if (!contact) {
-        response.status(404);
-        throw new Error("Contact not found");
+        if (
+            checkContactAvilability(contact, response) &&
+            checkUserAuthorization(contact, request, response)
+        ) {
+            const updatedContact = await Contact.findByIdAndUpdate(
+                request.params.id,
+                request.body,
+                { new: true }
+            );
+
+            response.status(200).json({
+                status: true,
+                message: "Contact Updated Sucessfully",
+                updatedContact,
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return response
+            .status(500)
+            .json({ status: false, msg: "Internal server error" });
     }
-
-    if (contact.user_id.toString() !== request.user.id) {
-        response.status(403);
-        throw new Error("Unauthorized Access to Contacts");
-    }
-
-    const { name, email, phone } = request.body;
-    if (!name || !email || !phone) {
-        response.status(400);
-        throw new Error("All fields are required");
-    }
-
-    const updatedContact = await Contact.findByIdAndUpdate(
-        request.params.id,
-        request.body,
-        { new: true }
-    );
-    response.status(200).json({
-        status: true,
-        message: "Contact Updated Sucessfully",
-        updatedContact,
-    });
 });
 
 // @discription Delete Contact
@@ -105,24 +144,26 @@ const updateContact = asyncHandler(async (request, response) => {
 // @access private
 
 const deleteContact = asyncHandler(async (request, response) => {
-    const contact = await Contact.findById(request.params.id);
+    try {
+        const contact = await Contact.findById(request.params.id);
 
-    if (!contact) {
-        response.status(404);
-        throw new Error("Contact not found");
+        if (
+            checkContactAvilability(contact, response) &&
+            checkUserAuthorization(contact, request, response)
+        ) {
+            await Contact.deleteOne({ _id: request.params.id });
+            response.status(200).json({
+                status: true,
+                message: "Contact Deleted Sucessfully",
+                deletedContact: contact,
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return response
+            .status(500)
+            .json({ status: false, msg: "Internal server error" });
     }
-
-    if (contact.user_id.toString() !== request.user.id) {
-        response.status(403);
-        throw new Error("Unauthorized Access to Contacts");
-    }
-
-    await Contact.deleteOne({ _id: request.params.id });
-    response.status(200).json({
-        status: true,
-        message: "Contact Deleted Sucessfully",
-        deletedContact: contact,
-    });
 });
 
 module.exports = {
