@@ -1,0 +1,14 @@
+<h1>Welocme <%= userName?userName:"You" %> </h1>
+<% if(messages.error) {%>
+    <%= messages.error %>
+<%}%>
+<% if(userName) {%>
+    <form action="user/logout?_method=delete" method="post">
+        <button type="submit">Log Out</button>
+    </form>
+ 
+<%} else { %>
+
+    <a href="/api/user/login">Login</a> ||
+    <a href="/api/user/register">Register</a>
+<%}%>
