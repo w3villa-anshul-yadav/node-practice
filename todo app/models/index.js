@@ -8,14 +8,13 @@ const sequelize = new Sequelize(
     {
         host: DBConstants.HOST,
         dialect: DBConstants.DIALECT,
-        password: DBConstants.PASSWORD,
-    }
+     }
 );
 
 sequelize
     .authenticate()
-    .then((obj) => {
-        console.log(obj);
+    .then(() => {
+         
         console.log("Connected to DataBase");
     })
     .catch((err) => {

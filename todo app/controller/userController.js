@@ -33,9 +33,8 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new Error("All fields Are Required");
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     try {
+        const hashedPassword = await bcrypt.hash(password, 10);
         const user = await User.create({
             name,
             email,
@@ -83,6 +82,13 @@ const loginUser = asyncHandler(async (req, res) => {
             },
         });
 
+        if (!user) {
+             res.status(400).json({
+                 sucess: false,
+                 message: "Email did not matched",
+             });
+        }
+        console.log(user);
         if (user && (await bcrypt.compare(password, user.password))) {
             const token = generateToken(user);
             console.log("token generated");
@@ -95,8 +101,10 @@ const loginUser = asyncHandler(async (req, res) => {
                 });
             }
         } else {
-            res.status(400);
-            throw new Error("email or password did not matched");
+            res.status(400).json({
+                sucess: false,
+                message: "Password did not matched",
+            });
         }
     } catch (error) {
         console.log(error);

@@ -33,7 +33,7 @@ const getTasks = asyncHandler(async (req, res) => {
 
         res.status(200).json({
             status: true,
-            message: "All Task Created By User",
+            message: " Task Created By User",
             tasks,
         });
     } catch (error) {
@@ -81,9 +81,9 @@ const getTask = asyncHandler(async (req, res) => {
 const createTask = asyncHandler(async (req, res) => {
     const { title, description } = req.body;
 
-    if (!title || !description) {
+    if (!title) {
         res.status(400);
-        throw new Error("All fields Are Required");
+        throw new Error("Title is Required");
     }
     try {
         const task = await Task.create({
@@ -129,8 +129,10 @@ const updateTask = asyncHandler(async (req, res) => {
                     task: updatedTask,
                 });
             } else {
-                res.status(403);
-                throw new Error("You are not Authorized To do this Task");
+                res.status(403).json({
+                    status: false,
+                    message: "You are not Authorized To do this Task",
+                });
             }
         } catch (error) {
             console.error(error);
@@ -157,8 +159,10 @@ const deleteTask = asyncHandler(async (req, res) => {
                     message: `Number of Task Deleted: ${count}`,
                 });
             } else {
-                res.status(403);
-                throw new Error("You are not Authorized To do this Task");
+                res.status(403).json({
+                    status: false,
+                    message: "You are not Authorized To do this Task",
+                });
             }
         } catch (error) {
             console.error(error);
