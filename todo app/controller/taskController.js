@@ -2,8 +2,14 @@ const asyncHandler = require("express-async-handler");
 
 const DB = require("../models");
 const Task = DB.Task;
+const User = DB.User;
 
 //utility functions
+
+const isAdmin = (req) => req.user.roles.includes("admin");
+
+const isModerator = (req) => req.user.roles.includes("moderator");
+
 // for all /api/task/:id checks whether task exists or not
 const noTaskFound = asyncHandler(async (req, res) => {
     try {
@@ -29,6 +35,8 @@ const noTaskFound = asyncHandler(async (req, res) => {
 // @access private
 const getTasks = asyncHandler(async (req, res) => {
     try {
+
+        
         const tasks = await Task.findAll({ where: { UserId: req.user.id } });
 
         res.status(200).json({
@@ -50,11 +58,30 @@ const getTasks = asyncHandler(async (req, res) => {
 const getTask = asyncHandler(async (req, res) => {
     if (!(await noTaskFound(req, res))) {
         try {
-            const task = await Task.findAll({
-                where: { id: req.params.id, UserId: req.user.id },
-            });
+            const task = await Task.findOne(
+                {
+                    where: { id: req.params.id },
+                },
+                {
+                    include: "user",
+                }
+            );
+            const taskCreator = await task.getUser();
 
-            if (task.length === 0) {
+            console.log(
+                "not creator user",
+                taskCreator.email !== req.user.email
+            );
+
+            console.log("moderator", isModerator(req));
+
+            console.log("admin", isAdmin(req));
+
+            if (
+                taskCreator.email !== req.user.email &&
+                !isModerator(req) &&
+                !isAdmin(req)
+            ) {
                 res.status(403).json({
                     status: false,
                     message: "You are not Authorized To do this Task",
@@ -109,29 +136,39 @@ const updateTask = asyncHandler(async (req, res) => {
     const { title, description } = req.body;
     if (!(await noTaskFound(req, res))) {
         try {
-            const task = await Task.findAll({
-                where: { id: req.params.id, UserId: req.user.id },
-            });
+            const task = await Task.findOne(
+                {
+                    where: { id: req.params.id },
+                },
+                {
+                    include: "user",
+                }
+            );
+            const taskCreator = await task.getUser();
 
-            if (task.length !== 0) {
+            if (
+                taskCreator.email !== req.user.email &&
+                !isModerator(req) &&
+                !isAdmin(req)
+            ) {
+                res.status(403).json({
+                    status: false,
+                    message: "You are not Authorized To do this Task",
+                });
+            } else {
                 const count = await Task.update(
                     { title, description },
                     { where: { id: req.params.id } }
                 );
 
                 const updatedTask = await Task.findAll({
-                    where: { id: req.params.id, UserId: req.user.id },
+                    where: { id: req.params.id },
                 });
 
                 res.status(200).json({
                     status: true,
                     message: `Number of Task Updated: ${count}`,
                     task: updatedTask,
-                });
-            } else {
-                res.status(403).json({
-                    status: false,
-                    message: "You are not Authorized To do this Task",
                 });
             }
         } catch (error) {
@@ -149,20 +186,32 @@ const updateTask = asyncHandler(async (req, res) => {
 const deleteTask = asyncHandler(async (req, res) => {
     if (!(await noTaskFound(req, res))) {
         try {
-            const count = await Task.destroy({
-                where: { id: req.params.id, UserId: req.user.id },
-            });
+            const task = await Task.findOne(
+                {
+                    where: { id: req.params.id },
+                },
+                {
+                    include: "user",
+                }
+            );
+            const taskCreator = await task.getUser();
 
-            if (count) {
-                res.status(200).json({
-                    status: true,
-                    message: `Number of Task Deleted: ${count}`,
-                });
-            } else {
+            if (taskCreator.email !== req.user.email && !isAdmin(req)) {
                 res.status(403).json({
                     status: false,
                     message: "You are not Authorized To do this Task",
                 });
+            } else {
+                const count = await Task.destroy({
+                    where: { id: req.params.id },
+                });
+
+                if (count) {
+                    res.status(200).json({
+                        status: true,
+                        message: `Number of Task Deleted: ${count}`,
+                    });
+                }
             }
         } catch (error) {
             console.error(error);

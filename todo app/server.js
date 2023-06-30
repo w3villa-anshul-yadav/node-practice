@@ -11,6 +11,7 @@ const errorHandlerMiddware = require("./middleWares/errorHandlerMiddware");
 //   Routes
 const taskRoutes = require("./routes/taskRoutes");
 const userRoutes = require("./routes/userRoutes");
+const roleRoutes = require("./routes/roleRoutes");
 
 //express app
 const express = require("express");
@@ -22,6 +23,7 @@ app.use(express.json());
 //API Routes
 app.use("/api/task", taskRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/roles", roleRoutes);
 
 //error handler middlewares
 app.use(noRoutesMiddleWare);

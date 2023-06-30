@@ -8,13 +8,12 @@ const sequelize = new Sequelize(
     {
         host: DBConstants.HOST,
         dialect: DBConstants.DIALECT,
-     }
+    }
 );
 
 sequelize
     .authenticate()
     .then(() => {
-         
         console.log("Connected to DataBase");
     })
     .catch((err) => {
@@ -28,9 +27,13 @@ DB.Sequelize = Sequelize;
 DB.sequelize = sequelize;
 
 DB.Task = require("./Task.js")(sequelize);
+DB.User_Role = require("./User_Role.js")(sequelize);
 DB.User = require("./User.js")(sequelize);
+DB.Role = require("./Role.js")(sequelize);
 DB.User.hasMany(DB.Task);
 DB.Task.belongsTo(DB.User);
+DB.User.belongsToMany(DB.Role, { through: "User_Role" });
+DB.Role.belongsToMany(DB.User, { through: "User_Role" });
 
 DB.sequelize.sync({ force: false }).then(() => {
     console.log("DB Synced SucessFully");

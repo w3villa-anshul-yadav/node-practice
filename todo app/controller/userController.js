@@ -4,15 +4,17 @@ const jwt = require("jsonwebtoken");
 
 const DB = require("../models");
 const User = DB.User;
+const Role = DB.Role;
 
 //utility function
-const generateToken = (user) => {
+const generateToken = (user, roles) => {
     return jwt.sign(
         {
             user: {
                 email: user.email,
                 name: user.name,
                 id: user.id,
+                roles,
             },
         },
         process.env.SECTRET_ACCESS_KEY,
@@ -35,32 +37,47 @@ const registerUser = asyncHandler(async (req, res) => {
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-        });
-        if (user) {
-            console.log("User Created");
 
-            const token = generateToken(user);
+        const existingUser = await User.findAll({ where: { email } });
 
-            res.status(201).json({
-                message: "User Created",
-                status: true,
-                token,
-                data: {
-                    name: user.name,
-                    email: user.email,
-                    id: user.id,
-                },
+        if (existingUser.length !== 0) {
+            res.status(400).json({
+                status: false,
+                message: "User is already created",
             });
+        } else {
+            const user = await User.create({
+                name,
+                email,
+                password: hashedPassword,
+            });
+
+            if (user) {
+                console.log("User Created");
+
+                const roles = ["user"];
+
+                await user.addRole(2); // w is primary key for User Role
+
+                const token = generateToken(user, roles);
+
+                res.status(201).json({
+                    message: "User Created",
+                    status: true,
+                    token,
+                    data: {
+                        name: user.name,
+                        email: user.email,
+                        id: user.id,
+                    },
+                });
+            }
         }
     } catch (error) {
         console.log(error);
         return res
             .status(500)
-            .json({ status: false, msg: "Internal server error" });
+            .json({ status: false, msg: "Internal server error", error });
     }
 });
 
@@ -83,15 +100,18 @@ const loginUser = asyncHandler(async (req, res) => {
         });
 
         if (!user) {
-             res.status(400).json({
-                 sucess: false,
-                 message: "Email did not matched",
-             });
+            res.status(400).json({
+                sucess: false,
+                message: "Email did not matched",
+            });
         }
-        console.log(user);
+
         if (user && (await bcrypt.compare(password, user.password))) {
-            const token = generateToken(user);
-            console.log("token generated");
+            const roles = await user.getRoles();
+
+            const rolesName = roles.map((role) => role.name);
+
+            const token = generateToken(user, rolesName);
 
             if (token) {
                 res.status(200).json({
@@ -110,7 +130,7 @@ const loginUser = asyncHandler(async (req, res) => {
         console.log(error);
         return res
             .status(500)
-            .json({ status: false, msg: "Internal server error" });
+            .json({ status: false, msg: "Internal server error", error });
     }
 });
 
