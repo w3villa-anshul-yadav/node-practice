@@ -1,36 +1,36 @@
 const asyncHandler = require("express-async-handler");
+
 const DB = require("../models");
 const Role = DB.Role;
 const User = DB.User;
 
+// utility function
 
-// utility function 
 const getUserRoleName = async (user) => {
+    //get User roles
     const existingRoles = await user.getRoles();
     return existingRoles.map((roles) => roles.name);
 };
 
-
-//controller function 
+//controller function
 
 // @discription get All Roles
 // @route GET api/roles
-// @access private to admin 
+// @access private to admin
 
 const getRoles = asyncHandler(async (req, res) => {
     try {
         const roles = await Role.findAll();
-        res.status(200).json({ status: true, messgae: "roles ", roles });
+        res.status(200).json({ status: true, messgae: "Roles ", roles });
     } catch (error) {
         console.log(error);
         res.status(400).json({ status: false, error });
     }
 });
 
-
 // @discription get All Roles
 // @route POST api/roles/assign_role
-// @access private to admin 
+// @access private to admin
 
 const assignNewRoleToUser = asyncHandler(async (req, res) => {
     const { email, roles } = req.body;
@@ -38,35 +38,36 @@ const assignNewRoleToUser = asyncHandler(async (req, res) => {
     if (!email || !roles) {
         res.status(400).json({
             status: false,
-            messgae: "Email and roles are Required ",
+            messgae: "Email and Roles are Required ",
         });
     }
+
     try {
         const user = await User.findOne({ where: { email } });
 
         if (user) {
             const existingRolesNames = await getUserRoleName(user);
 
-            console.log("previous roles", await getUserRoleName(user));
-
+ 
             roles.forEach(async (roleName) => {
                 if (!existingRolesNames.includes(roleName)) {
                     const role = await Role.findOne({
                         where: { name: roleName },
                     });
+
                     await user.addRoles(role);
                 }
             });
 
             await user.reload();
 
-            console.log("updated roles", await getUserRoleName(user));
-
+ 
             res.status(201).json({
                 status: true,
-                messgae: "Roles updated Sucessfully",
+                messgae: "Roles Updated Sucessfully",
                 roles: await getUserRoleName(user),
             });
+
         } else {
             res.status(400).json({
                 status: false,
@@ -81,11 +82,9 @@ const assignNewRoleToUser = asyncHandler(async (req, res) => {
     }
 });
 
-
 // @discription get All Roles
 // @route DELETE api/roles/remove_role
-// @access private to admin 
-
+// @access private to admin
 
 const removeRole = asyncHandler(async (req, res) => {
     const { email, roles } = req.body;
@@ -103,12 +102,13 @@ const removeRole = asyncHandler(async (req, res) => {
         if (user) {
             const existingRolesNames = await getUserRoleName(user);
 
-            console.log("previous roles", existingRolesNames);
+             
 
             let roleNotExistCount = 0;
 
             roles.forEach(async (roleName) => {
-                console.log("existing", existingRolesNames.includes(roleName));
+                 
+
                 if (!existingRolesNames.includes(roleName)) {
                     roleNotExistCount++;
                 } else {
@@ -121,19 +121,20 @@ const removeRole = asyncHandler(async (req, res) => {
 
             await user.reload();
 
-            console.log("updated roles", await getUserRoleName(user));
-
+ 
             if (roleNotExistCount > 0) {
                 res.status(400).json({
                     status: false,
                     messgae: `${roleNotExistCount} does not exist so not removed `,
                 });
             }
+
             res.status(201).json({
                 status: true,
                 messgae: "Roles Removed Sucessfully",
                 roles: await getUserRoleName(user),
             });
+            
         } else {
             res.status(400).json({
                 status: false,
@@ -150,8 +151,7 @@ const removeRole = asyncHandler(async (req, res) => {
 
 // @discription get All User Roles
 // @route GET api/roles/user_role
-// @access private to admin 
-
+// @access private to admin
 
 const getUserRoles = asyncHandler(async (req, res) => {
     const { email } = req.body;
@@ -164,7 +164,6 @@ const getUserRoles = asyncHandler(async (req, res) => {
     }
 
     try {
-
         const user = await User.findOne({ where: { email } });
 
         if (user) {

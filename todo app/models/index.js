@@ -1,4 +1,5 @@
 const { Sequelize } = require("sequelize");
+
 const DBConstants = require("../config/DBconfig");
 
 const sequelize = new Sequelize(
@@ -30,9 +31,11 @@ DB.Task = require("./Task.js")(sequelize);
 DB.User_Role = require("./User_Role.js")(sequelize);
 DB.User = require("./User.js")(sequelize);
 DB.Role = require("./Role.js")(sequelize);
+
+
 DB.User.hasMany(DB.Task);
 DB.Task.belongsTo(DB.User);
-DB.User.belongsToMany(DB.Role, { through: "User_Role" });
+DB.User.belongsToMany(DB.Role, { through: "User_Role" }); // User_Role is third table for many to many Association
 DB.Role.belongsToMany(DB.User, { through: "User_Role" });
 
 DB.sequelize.sync({ force: false }).then(() => {

@@ -11,6 +11,7 @@ const isAdmin = (req) => req.user.roles.includes("admin");
 const isModerator = (req) => req.user.roles.includes("moderator");
 
 // for all /api/task/:id checks whether task exists or not
+
 const noTaskFound = asyncHandler(async (req, res) => {
     try {
         const task = await Task.findAll({
@@ -33,10 +34,9 @@ const noTaskFound = asyncHandler(async (req, res) => {
 // @discription get All Task
 // @route GET api/task
 // @access private
+
 const getTasks = asyncHandler(async (req, res) => {
     try {
-
-        
         const tasks = await Task.findAll({ where: { UserId: req.user.id } });
 
         res.status(200).json({
@@ -66,16 +66,8 @@ const getTask = asyncHandler(async (req, res) => {
                     include: "user",
                 }
             );
+
             const taskCreator = await task.getUser();
-
-            console.log(
-                "not creator user",
-                taskCreator.email !== req.user.email
-            );
-
-            console.log("moderator", isModerator(req));
-
-            console.log("admin", isAdmin(req));
 
             if (
                 taskCreator.email !== req.user.email &&
@@ -95,6 +87,7 @@ const getTask = asyncHandler(async (req, res) => {
             }
         } catch (error) {
             console.error(error);
+
             return res
                 .status(500)
                 .json({ status: false, msg: "Internal server error" });
@@ -119,7 +112,6 @@ const createTask = asyncHandler(async (req, res) => {
             UserId: req.user.id,
         });
 
-        console.log("Task Created");
         res.status(200).json(task);
     } catch (error) {
         console.error(error);
@@ -144,6 +136,7 @@ const updateTask = asyncHandler(async (req, res) => {
                     include: "user",
                 }
             );
+
             const taskCreator = await task.getUser();
 
             if (

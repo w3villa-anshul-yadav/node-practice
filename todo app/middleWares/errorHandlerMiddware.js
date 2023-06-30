@@ -2,6 +2,7 @@ const statusCode = require("../constants");
 
 const errorHandler = (err, req, res, next) => {
     const receivedStatusCode = res.statusCode || 500;
+
     switch (receivedStatusCode) {
         case statusCode.FORBIDDEN:
             res.json({
@@ -10,6 +11,7 @@ const errorHandler = (err, req, res, next) => {
                 stackTarce: err.stack,
             });
             break;
+
         case statusCode.NOT_FOUND:
             res.json({
                 title: "NOT FOUND",
@@ -17,6 +19,7 @@ const errorHandler = (err, req, res, next) => {
                 stackTarce: err.stack,
             });
             break;
+
         case statusCode.SERVER_ERROR:
             res.json({
                 title: "SERVER ERROR",
@@ -24,6 +27,7 @@ const errorHandler = (err, req, res, next) => {
                 stackTarce: err.stack,
             });
             break;
+
         case statusCode.UNAUTHORIZED:
             res.json({
                 title: "UNAUTHORIZED",
@@ -31,6 +35,7 @@ const errorHandler = (err, req, res, next) => {
                 stackTarce: err.stack,
             });
             break;
+
         case statusCode.VALIDATION_ERROR:
             res.json({
                 title: "VALIDATION ERROR",
@@ -38,6 +43,7 @@ const errorHandler = (err, req, res, next) => {
                 stackTarce: err.stack,
             });
             break;
+
         default:
             console.log("No Errors");
             break;

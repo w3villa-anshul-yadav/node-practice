@@ -1,7 +1,6 @@
 const express = require("express");
 const route = express.Router();
 
-
 const {
     registerUser,
     loginUser,
@@ -25,11 +24,7 @@ route.get("/register", checkUserNotAuthentication, (req, res) => {
 
 route.post("/register", checkUserNotAuthentication, registerUser);
 
-route.post(
-    "/login",
-    checkUserNotAuthentication,
-   loginUser
-);
+route.post("/login", checkUserNotAuthentication, loginUser);
 
 route.delete("/logout", checkUserAuthentication, logOutUser);
 

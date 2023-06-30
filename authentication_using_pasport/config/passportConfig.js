@@ -7,6 +7,7 @@ const initialize = (passport) => {
         getUserById,
     } = require("../controller/userController");
     
+
     const authenticateUser = async (email, password, done) => {
         const user = await getUserByEmail(email);
         if (user == null) {
@@ -28,10 +29,14 @@ const initialize = (passport) => {
         }
     };
 
+
     passport.use(
         new LocalStrategy({ usernameField: "email" }, authenticateUser)
     );
+
+
     passport.serializeUser((user, done) => done(null, user.id));
+    
     passport.deserializeUser(async (userId, done) =>
         done(null, await getUserById(userId))
     );

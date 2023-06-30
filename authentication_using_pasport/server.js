@@ -18,6 +18,8 @@ const initialize = require("./config/passportConfig");
 
 initialize(passport);
 
+
+
 // express app
 const express = require("express");
 const app = express();
@@ -25,6 +27,9 @@ const app = express();
 //database connection
 const DB = require("./config/DBConnection");
 DB();
+
+
+//middlewares 
 
 app.set("view-engine", "ejs");
 
@@ -48,10 +53,16 @@ app.use(passport.session());
 
 app.use(methodOverride("_method"));
 
+
 //routes
 app.use("/api/user", userRoutes);
 
 app.use(noRoutesMiddleWare);
+
+
+
+
+
 
 //server port
 app.listen(port, () => {

@@ -1,4 +1,3 @@
-
 const validateToken = require("../middleWares/validateTokenMiddleware");
 
 const {

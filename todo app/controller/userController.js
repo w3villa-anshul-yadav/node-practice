@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const DB = require("../models");
 const User = DB.User;
-const Role = DB.Role;
+
 
 //utility function
 const generateToken = (user, roles) => {
@@ -21,6 +21,7 @@ const generateToken = (user, roles) => {
         { expiresIn: "10m" }
     );
 };
+
 
 // controller function
 
@@ -53,7 +54,6 @@ const registerUser = asyncHandler(async (req, res) => {
             });
 
             if (user) {
-                console.log("User Created");
 
                 const roles = ["user"];
 
@@ -80,6 +80,7 @@ const registerUser = asyncHandler(async (req, res) => {
             .json({ status: false, msg: "Internal server error", error });
     }
 });
+
 
 // @discription Login  User
 // @route POST api/user/login
@@ -133,6 +134,7 @@ const loginUser = asyncHandler(async (req, res) => {
             .json({ status: false, msg: "Internal server error", error });
     }
 });
+
 
 // @discription Register New User
 // @route POST api/user/current

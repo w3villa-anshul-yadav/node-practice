@@ -1,7 +1,8 @@
 const asyncHandler = require("express-async-handler");
-const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
+
+const User = require("../models/User");
 
 const registerUser = asyncHandler(async (req, res) => {
     const email = req.body.email;
