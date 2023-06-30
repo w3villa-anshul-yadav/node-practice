@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
 
+const logger = require("../logger");
+
 const DB = require("../models");
 const Role = DB.Role;
 const User = DB.User;
@@ -21,9 +23,11 @@ const getUserRoleName = async (user) => {
 const getRoles = asyncHandler(async (req, res) => {
     try {
         const roles = await Role.findAll();
+
         res.status(200).json({ status: true, messgae: "Roles ", roles });
     } catch (error) {
-        console.log(error);
+        logger.error(error);
+
         res.status(400).json({ status: false, error });
     }
 });
@@ -36,6 +40,8 @@ const assignNewRoleToUser = asyncHandler(async (req, res) => {
     const { email, roles } = req.body;
 
     if (!email || !roles) {
+        logger.error("Email and Roles are Required ");
+
         res.status(400).json({
             status: false,
             messgae: "Email and Roles are Required ",
@@ -48,7 +54,6 @@ const assignNewRoleToUser = asyncHandler(async (req, res) => {
         if (user) {
             const existingRolesNames = await getUserRoleName(user);
 
- 
             roles.forEach(async (roleName) => {
                 if (!existingRolesNames.includes(roleName)) {
                     const role = await Role.findOne({
@@ -61,21 +66,23 @@ const assignNewRoleToUser = asyncHandler(async (req, res) => {
 
             await user.reload();
 
- 
+            logger.info("Roles Updated Sucessfully");
+
             res.status(201).json({
                 status: true,
                 messgae: "Roles Updated Sucessfully",
                 roles: await getUserRoleName(user),
             });
-
         } else {
+            logger.error("User is not Registred");
+
             res.status(400).json({
                 status: false,
                 messgae: "User is not Registred",
             });
         }
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         return res
             .status(500)
             .json({ status: false, msg: "Internal server error" });
@@ -90,6 +97,8 @@ const removeRole = asyncHandler(async (req, res) => {
     const { email, roles } = req.body;
 
     if (!email || !roles) {
+        logger.error("Email and roles are Required ");
+
         res.status(400).json({
             status: false,
             messgae: "Email and roles are Required ",
@@ -102,13 +111,9 @@ const removeRole = asyncHandler(async (req, res) => {
         if (user) {
             const existingRolesNames = await getUserRoleName(user);
 
-             
-
             let roleNotExistCount = 0;
 
             roles.forEach(async (roleName) => {
-                 
-
                 if (!existingRolesNames.includes(roleName)) {
                     roleNotExistCount++;
                 } else {
@@ -121,28 +126,33 @@ const removeRole = asyncHandler(async (req, res) => {
 
             await user.reload();
 
- 
             if (roleNotExistCount > 0) {
+                logger.info(
+                    `${roleNotExistCount} does not exist so not removed `
+                );
                 res.status(400).json({
                     status: false,
                     messgae: `${roleNotExistCount} does not exist so not removed `,
                 });
             }
 
+            logger.info("Roles Removed Sucessfully");
+
             res.status(201).json({
                 status: true,
                 messgae: "Roles Removed Sucessfully",
                 roles: await getUserRoleName(user),
             });
-            
         } else {
+            logger.error("User is not Registred");
+
             res.status(400).json({
                 status: false,
                 messgae: "User is not Registred",
             });
         }
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         return res
             .status(500)
             .json({ status: false, msg: "Internal server error" });
@@ -157,6 +167,8 @@ const getUserRoles = asyncHandler(async (req, res) => {
     const { email } = req.body;
 
     if (!email) {
+        logger.error("Email is Required ");
+
         res.status(400).json({
             status: false,
             messgae: "Email is Required ",
@@ -170,17 +182,22 @@ const getUserRoles = asyncHandler(async (req, res) => {
             const roles = await user.getRoles();
             const rolesName = roles.map((role) => role.name);
             if (rolesName) {
+                logger.info("roles of user ", rolesName);
+
                 return res
                     .status(200)
-                    .json({ status: false, msg: "roles of user ", rolesName });
+                    .json({ status: true, msg: "roles of user ", rolesName });
             }
         } else {
+            logger.error("User does not exist");
+
             return res
                 .status(400)
                 .json({ status: false, msg: "User does not exist" });
         }
     } catch (error) {
-        console.error(error);
+        logger.error(error);
+
         return res
             .status(500)
             .json({ status: false, msg: "Internal server error" });

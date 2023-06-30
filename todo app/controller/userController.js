@@ -2,9 +2,10 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+const logger = require("../logger");
+
 const DB = require("../models");
 const User = DB.User;
-
 
 //utility function
 const generateToken = (user, roles) => {
@@ -21,7 +22,6 @@ const generateToken = (user, roles) => {
         { expiresIn: "10m" }
     );
 };
-
 
 // controller function
 
@@ -54,7 +54,6 @@ const registerUser = asyncHandler(async (req, res) => {
             });
 
             if (user) {
-
                 const roles = ["user"];
 
                 await user.addRole(2); // w is primary key for User Role
@@ -74,13 +73,12 @@ const registerUser = asyncHandler(async (req, res) => {
             }
         }
     } catch (error) {
-        console.log(error);
+        logger.error(error);
         return res
             .status(500)
             .json({ status: false, msg: "Internal server error", error });
     }
 });
-
 
 // @discription Login  User
 // @route POST api/user/login
@@ -90,6 +88,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     if (!email || !password) {
         res.status(400);
+        logger.error("All fields Are Required");
         throw new Error("All fields Are Required");
     }
 
@@ -101,6 +100,7 @@ const loginUser = asyncHandler(async (req, res) => {
         });
 
         if (!user) {
+            logger.error("Email did not matched");
             res.status(400).json({
                 sucess: false,
                 message: "Email did not matched",
@@ -115,6 +115,7 @@ const loginUser = asyncHandler(async (req, res) => {
             const token = generateToken(user, rolesName);
 
             if (token) {
+                logger.info("User logged In");
                 res.status(200).json({
                     status: true,
                     message: "User logged In",
@@ -122,19 +123,19 @@ const loginUser = asyncHandler(async (req, res) => {
                 });
             }
         } else {
+            logger.error("Password did not matched");
             res.status(400).json({
                 sucess: false,
                 message: "Password did not matched",
             });
         }
     } catch (error) {
-        console.log(error);
+        logger.error(error);
         return res
             .status(500)
             .json({ status: false, msg: "Internal server error", error });
     }
 });
-
 
 // @discription Register New User
 // @route POST api/user/current

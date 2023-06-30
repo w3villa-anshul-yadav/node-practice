@@ -1,6 +1,9 @@
 const asyncHandler = require("express-async-handler");
 
+const logger = require("../logger");
+
 const DB = require("../models");
+const { log } = require("console");
 const Task = DB.Task;
 const User = DB.User;
 
@@ -19,11 +22,12 @@ const noTaskFound = asyncHandler(async (req, res) => {
         });
 
         if (task.length === 0) {
+            logger.error("No Task Found");
             res.status(404).json({ status: false, message: "No Task Found" });
             return true;
         }
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         res.status(404).json({ status: false, error });
         return true;
     }
@@ -45,7 +49,7 @@ const getTasks = asyncHandler(async (req, res) => {
             tasks,
         });
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         return res
             .status(500)
             .json({ status: false, msg: "Internal server error" });
@@ -74,11 +78,13 @@ const getTask = asyncHandler(async (req, res) => {
                 !isModerator(req) &&
                 !isAdmin(req)
             ) {
+                logger.error("You are not Authorized To do this Task");
                 res.status(403).json({
                     status: false,
                     message: "You are not Authorized To do this Task",
                 });
             } else {
+                logger.info(`Task with id : ${req.params.id}`);
                 res.status(200).json({
                     status: true,
                     message: `Task with id : ${req.params.id}`,
@@ -103,6 +109,7 @@ const createTask = asyncHandler(async (req, res) => {
 
     if (!title) {
         res.status(400);
+        logger.error("Title is Required");
         throw new Error("Title is Required");
     }
     try {
@@ -114,7 +121,7 @@ const createTask = asyncHandler(async (req, res) => {
 
         res.status(200).json(task);
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         return res
             .status(500)
             .json({ status: false, msg: "Internal server error" });
@@ -144,6 +151,7 @@ const updateTask = asyncHandler(async (req, res) => {
                 !isModerator(req) &&
                 !isAdmin(req)
             ) {
+                logger.error("You are not Authorized To do this Task");
                 res.status(403).json({
                     status: false,
                     message: "You are not Authorized To do this Task",
@@ -158,6 +166,8 @@ const updateTask = asyncHandler(async (req, res) => {
                     where: { id: req.params.id },
                 });
 
+                logger.info(`Number of Task Updated: ${count}`);
+
                 res.status(200).json({
                     status: true,
                     message: `Number of Task Updated: ${count}`,
@@ -165,7 +175,7 @@ const updateTask = asyncHandler(async (req, res) => {
                 });
             }
         } catch (error) {
-            console.error(error);
+            logger.error(error);
             return res
                 .status(500)
                 .json({ status: false, msg: "Internal server error" });
@@ -190,6 +200,8 @@ const deleteTask = asyncHandler(async (req, res) => {
             const taskCreator = await task.getUser();
 
             if (taskCreator.email !== req.user.email && !isAdmin(req)) {
+                logger.error("You are not Authorized To do this Task");
+
                 res.status(403).json({
                     status: false,
                     message: "You are not Authorized To do this Task",
@@ -200,6 +212,8 @@ const deleteTask = asyncHandler(async (req, res) => {
                 });
 
                 if (count) {
+                    logger.info(`Number of Task Deleted: ${count}`);
+
                     res.status(200).json({
                         status: true,
                         message: `Number of Task Deleted: ${count}`,
@@ -207,7 +221,8 @@ const deleteTask = asyncHandler(async (req, res) => {
                 }
             }
         } catch (error) {
-            console.error(error);
+            logger.error(error);
+            
             return res
                 .status(500)
                 .json({ status: false, msg: "Internal server error" });

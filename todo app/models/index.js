@@ -2,6 +2,8 @@ const { Sequelize } = require("sequelize");
 
 const DBConstants = require("../config/DBconfig");
 
+const logger = require("../logger");
+
 const sequelize = new Sequelize(
     DBConstants.DATABASE_NAME,
     DBConstants.USER,
@@ -15,10 +17,10 @@ const sequelize = new Sequelize(
 sequelize
     .authenticate()
     .then(() => {
-        console.log("Connected to DataBase");
+        logger.info("Connected to DataBase");
     })
     .catch((err) => {
-        console.log(err);
+        logger.error(err);
         process.exit(1);
     });
 
@@ -32,14 +34,13 @@ DB.User_Role = require("./User_Role.js")(sequelize);
 DB.User = require("./User.js")(sequelize);
 DB.Role = require("./Role.js")(sequelize);
 
-
 DB.User.hasMany(DB.Task);
 DB.Task.belongsTo(DB.User);
 DB.User.belongsToMany(DB.Role, { through: "User_Role" }); // User_Role is third table for many to many Association
 DB.Role.belongsToMany(DB.User, { through: "User_Role" });
 
 DB.sequelize.sync({ force: false }).then(() => {
-    console.log("DB Synced SucessFully");
+    logger.info("DB Synced SucessFully");
 });
 
 module.exports = DB;
