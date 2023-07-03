@@ -1,6 +1,6 @@
 const swaggerAutogen = require("swagger-autogen")();
 const outputFile = "./swagger/swagger.json";
-const endpointsFiles = ["../server.js", "../controllers/v1/**/*.js"];
+const endpointsFiles = ["../server.js", "../controllers/**/*.js"];
 const doc = {
     info: {
         version: "1.0.0",
@@ -15,16 +15,16 @@ const doc = {
     tags: [
         {
             name: "User",
-            description:
-                "Endpoints to register, login, forget password and reset password",
+            description: "Endpoints to register, login,current user",
         },
         {
             name: "Task",
             description: "Endpoints to get, create, update and delete a task",
         },
+
         {
-            name: "Home",
-            description: "Endpoints to get home page",
+            name: "Role",
+            description: "Endpoints to get ,assign ,remove roles of user",
         },
     ],
     definitions: {
@@ -51,53 +51,6 @@ const doc = {
         Login: {
             email: "example@gmail.com",
             password: "123456",
-        },
-        ForgetPassword: {
-            email: "example@gmail.com",
-        },
-        ForgetPasswordResponse: {
-            success: true,
-            token: "",
-            msg: "response message",
-        },
-        ResetPassword: {
-            password: "123456",
-            confirmPassword: "123456",
-            token: "",
-        },
-        ResetPasswordResponse: {
-            success: true,
-            msg: "response message",
-        },
-        AuthResponse: {
-            token: "",
-            success: true,
-            msg: "response message",
-        },
-        TaskResponse: {
-            success: true,
-            msg: "response message",
-            task: {},
-        },
-        SuccessResponse: {
-            success: true,
-            msg: "response message",
-        },
-        BadRequest: {
-            success: false,
-            msg: "response message",
-        },
-        NotFound: {
-            success: false,
-            msg: "response message",
-        },
-        Unauthenticated: {
-            success: false,
-            msg: "response message",
-        },
-        InternalServerError: {
-            success: false,
-            msg: "response message",
         },
     },
 };

@@ -2,7 +2,7 @@
 require("dotenv").config();
 const port = process.env.PORT;
 
-const cors = require('cors')
+const cors = require("cors");
 
 // swagger
 const swaggerUi = require("swagger-ui-express");
@@ -33,11 +33,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/roles", roleRoutes);
 
 // Swagger
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerDocs)
-);
+app.use("/api-documents", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 //error handler middlewares
 app.use(noRoutesMiddleWare);

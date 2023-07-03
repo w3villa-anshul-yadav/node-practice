@@ -21,6 +21,11 @@ const getUserRoleName = async (user) => {
 // @access private to admin
 
 const getRoles = asyncHandler(async (req, res) => {
+    /**
+        #swagger.summary = "Get all roles"
+        #swagger.tags = ['Role']
+        #swagger.description="Endpoint to get all Role"
+     */
     try {
         const roles = await Role.findAll();
 
@@ -37,6 +42,11 @@ const getRoles = asyncHandler(async (req, res) => {
 // @access private to admin
 
 const assignNewRoleToUser = asyncHandler(async (req, res) => {
+    /**
+        #swagger.summary = "Assign new roles to user"
+        #swagger.tags = ['Role']
+        #swagger.description="Endpoint Assign new roles to user"
+     */
     const { email, roles } = req.body;
 
     if (!email || !roles) {
@@ -94,6 +104,11 @@ const assignNewRoleToUser = asyncHandler(async (req, res) => {
 // @access private to admin
 
 const removeRole = asyncHandler(async (req, res) => {
+    /**
+        #swagger.summary = "Remove roles of user"
+        #swagger.tags = ['Role']
+        #swagger.description="Endpoint Remove roles of user"
+     */
     const { email, roles } = req.body;
 
     if (!email || !roles) {
@@ -164,6 +179,11 @@ const removeRole = asyncHandler(async (req, res) => {
 // @access private to admin
 
 const getUserRoles = asyncHandler(async (req, res) => {
+    /**
+        #swagger.summary = "Get roles of user"
+        #swagger.tags = ['Role']
+        #swagger.description="Endpoint Get roles of user"
+     */
     const { email } = req.body;
 
     if (!email) {

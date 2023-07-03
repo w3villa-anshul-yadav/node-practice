@@ -10,15 +10,15 @@
   "tags": [
     {
       "name": "User",
-      "description": "Endpoints to register, login, forget password and reset password"
+      "description": "Endpoints to register, login,current user"
     },
     {
       "name": "Task",
       "description": "Endpoints to get, create, update and delete a task"
     },
     {
-      "name": "Home",
-      "description": "Endpoints to get home page"
+      "name": "Role",
+      "description": "Endpoints to get ,assign ,remove roles of user"
     }
   ],
   "schemes": [
@@ -33,7 +33,11 @@
   "paths": {
     "/api/task/": {
       "get": {
-        "description": "",
+        "tags": [
+          "Task"
+        ],
+        "summary": "Get all Tasks",
+        "description": "Endpoint to get all task",
         "parameters": [
           {
             "name": "authorization",
@@ -59,7 +63,11 @@
         }
       },
       "post": {
-        "description": "",
+        "tags": [
+          "Task"
+        ],
+        "summary": "create Task",
+        "description": "Endpoint to Create task",
         "parameters": [
           {
             "name": "authorization",
@@ -105,7 +113,11 @@
     },
     "/api/task/{id}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Task"
+        ],
+        "summary": "Get task by id",
+        "description": "Endpoint to get task",
         "parameters": [
           {
             "name": "id",
@@ -140,7 +152,11 @@
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Task"
+        ],
+        "summary": "Delete Task",
+        "description": "Endpoint to delete Task",
         "parameters": [
           {
             "name": "id",
@@ -175,7 +191,11 @@
         }
       },
       "patch": {
-        "description": "",
+        "tags": [
+          "Task"
+        ],
+        "summary": "Update Task",
+        "description": "Endpoint update task",
         "parameters": [
           {
             "name": "id",
@@ -267,7 +287,11 @@
     },
     "/api/user/login": {
       "post": {
-        "description": "",
+        "tags": [
+          "User"
+        ],
+        "summary": "Login",
+        "description": "Endpoint login user",
         "parameters": [
           {
             "name": "body",
@@ -300,7 +324,11 @@
     },
     "/api/user/current": {
       "get": {
-        "description": "",
+        "tags": [
+          "User"
+        ],
+        "summary": "Current user",
+        "description": "Endpoint get current user",
         "parameters": [
           {
             "name": "authorization",
@@ -325,7 +353,11 @@
     },
     "/api/roles/": {
       "get": {
-        "description": "",
+        "tags": [
+          "Role"
+        ],
+        "summary": "Get all roles",
+        "description": "Endpoint to get all Role",
         "parameters": [
           {
             "name": "authorization",
@@ -356,7 +388,11 @@
     },
     "/api/roles/user_role": {
       "get": {
-        "description": "",
+        "tags": [
+          "Role"
+        ],
+        "summary": "Get roles of user",
+        "description": "Endpoint Get roles of user",
         "parameters": [
           {
             "name": "authorization",
@@ -390,7 +426,11 @@
     },
     "/api/roles/assign_role": {
       "post": {
-        "description": "",
+        "tags": [
+          "Role"
+        ],
+        "summary": "Assign new roles to user",
+        "description": "Endpoint Assign new roles to user",
         "parameters": [
           {
             "name": "authorization",
@@ -439,7 +479,11 @@
     },
     "/api/roles/remove_role": {
       "delete": {
-        "description": "",
+        "tags": [
+          "Role"
+        ],
+        "summary": "Remove roles of user",
+        "description": "Endpoint Remove roles of user",
         "parameters": [
           {
             "name": "authorization",
@@ -567,161 +611,6 @@
         "password": {
           "type": "string",
           "example": "123456"
-        }
-      }
-    },
-    "ForgetPassword": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string",
-          "example": "example@gmail.com"
-        }
-      }
-    },
-    "ForgetPasswordResponse": {
-      "type": "object",
-      "properties": {
-        "success": {
-          "type": "boolean",
-          "example": true
-        },
-        "token": {
-          "type": "string",
-          "example": ""
-        },
-        "msg": {
-          "type": "string",
-          "example": "response message"
-        }
-      }
-    },
-    "ResetPassword": {
-      "type": "object",
-      "properties": {
-        "password": {
-          "type": "string",
-          "example": "123456"
-        },
-        "confirmPassword": {
-          "type": "string",
-          "example": "123456"
-        },
-        "token": {
-          "type": "string",
-          "example": ""
-        }
-      }
-    },
-    "ResetPasswordResponse": {
-      "type": "object",
-      "properties": {
-        "success": {
-          "type": "boolean",
-          "example": true
-        },
-        "msg": {
-          "type": "string",
-          "example": "response message"
-        }
-      }
-    },
-    "AuthResponse": {
-      "type": "object",
-      "properties": {
-        "token": {
-          "type": "string",
-          "example": ""
-        },
-        "success": {
-          "type": "boolean",
-          "example": true
-        },
-        "msg": {
-          "type": "string",
-          "example": "response message"
-        }
-      }
-    },
-    "TaskResponse": {
-      "type": "object",
-      "properties": {
-        "success": {
-          "type": "boolean",
-          "example": true
-        },
-        "msg": {
-          "type": "string",
-          "example": "response message"
-        },
-        "task": {
-          "type": "object",
-          "properties": {}
-        }
-      }
-    },
-    "SuccessResponse": {
-      "type": "object",
-      "properties": {
-        "success": {
-          "type": "boolean",
-          "example": true
-        },
-        "msg": {
-          "type": "string",
-          "example": "response message"
-        }
-      }
-    },
-    "BadRequest": {
-      "type": "object",
-      "properties": {
-        "success": {
-          "type": "boolean",
-          "example": false
-        },
-        "msg": {
-          "type": "string",
-          "example": "response message"
-        }
-      }
-    },
-    "NotFound": {
-      "type": "object",
-      "properties": {
-        "success": {
-          "type": "boolean",
-          "example": false
-        },
-        "msg": {
-          "type": "string",
-          "example": "response message"
-        }
-      }
-    },
-    "Unauthenticated": {
-      "type": "object",
-      "properties": {
-        "success": {
-          "type": "boolean",
-          "example": false
-        },
-        "msg": {
-          "type": "string",
-          "example": "response message"
-        }
-      }
-    },
-    "InternalServerError": {
-      "type": "object",
-      "properties": {
-        "success": {
-          "type": "boolean",
-          "example": false
-        },
-        "msg": {
-          "type": "string",
-          "example": "response message"
         }
       }
     }

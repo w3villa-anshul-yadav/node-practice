@@ -89,6 +89,12 @@ const registerUser = asyncHandler(async (req, res) => {
 // @route POST api/user/login
 // @access public
 const loginUser = asyncHandler(async (req, res) => {
+    /**
+        #swagger.summary = "Login"
+        #swagger.tags = ['User']
+        #swagger.description="Endpoint login user"
+     */
+
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -146,6 +152,11 @@ const loginUser = asyncHandler(async (req, res) => {
 // @route POST api/user/current
 // @access private
 const currentUser = asyncHandler(async (req, res) => {
+    /**
+        #swagger.summary = "Current user"
+        #swagger.tags = ['User']
+        #swagger.description="Endpoint get current user"
+     */
     res.status(200).json({
         status: true,
         user: req.user,

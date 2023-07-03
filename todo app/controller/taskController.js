@@ -40,6 +40,11 @@ const noTaskFound = asyncHandler(async (req, res) => {
 // @access private
 
 const getTasks = asyncHandler(async (req, res) => {
+    /**
+        #swagger.summary = "Get all Tasks"
+        #swagger.tags = ['Task']
+        #swagger.description="Endpoint to get all task"
+     */
     try {
         const tasks = await Task.findAll({ where: { UserId: req.user.id } });
 
@@ -60,6 +65,11 @@ const getTasks = asyncHandler(async (req, res) => {
 // @route GET api/task/:id
 // @access private
 const getTask = asyncHandler(async (req, res) => {
+    /**
+        #swagger.summary = "Get task by id"
+        #swagger.tags = ['Task']
+        #swagger.description="Endpoint to get  task"
+     */
     if (!(await noTaskFound(req, res))) {
         try {
             const task = await Task.findOne(
@@ -105,6 +115,11 @@ const getTask = asyncHandler(async (req, res) => {
 // @route POST api/task/
 // @access private
 const createTask = asyncHandler(async (req, res) => {
+    /**
+        #swagger.summary = "create  Task"
+        #swagger.tags = ['Task']
+        #swagger.description="Endpoint to Create task"
+     */
     const { title, description } = req.body;
 
     if (!title) {
@@ -132,6 +147,11 @@ const createTask = asyncHandler(async (req, res) => {
 // @route PUT api/task/:id
 // @access private
 const updateTask = asyncHandler(async (req, res) => {
+    /**
+        #swagger.summary = "Update Task"
+        #swagger.tags = ['Task']
+        #swagger.description="Endpoint update task"
+     */
     const { title, description } = req.body;
     if (!(await noTaskFound(req, res))) {
         try {
@@ -187,6 +207,11 @@ const updateTask = asyncHandler(async (req, res) => {
 // @route DELETE api/task/:id
 // @access private
 const deleteTask = asyncHandler(async (req, res) => {
+    /**
+        #swagger.summary = "Delete Task"
+        #swagger.tags = ['Task']
+        #swagger.description="Endpoint to delete Task"
+     */
     if (!(await noTaskFound(req, res))) {
         try {
             const task = await Task.findOne(
@@ -222,7 +247,7 @@ const deleteTask = asyncHandler(async (req, res) => {
             }
         } catch (error) {
             logger.error(error);
-            
+
             return res
                 .status(500)
                 .json({ status: false, msg: "Internal server error" });
