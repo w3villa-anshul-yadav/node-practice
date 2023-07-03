@@ -2,6 +2,12 @@
 require("dotenv").config();
 const port = process.env.PORT;
 
+const cors = require('cors')
+
+// swagger
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocs = require("./swagger/swagger.json");
+
 //DB Connection
 const DB = require("./models/index");
 
@@ -19,11 +25,19 @@ const app = express();
 
 //middleWares
 app.use(express.json());
+app.use(cors());
 
 //API Routes
 app.use("/api/task", taskRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/roles", roleRoutes);
+
+// Swagger
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocs)
+);
 
 //error handler middlewares
 app.use(noRoutesMiddleWare);
