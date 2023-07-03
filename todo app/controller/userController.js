@@ -28,6 +28,11 @@ const generateToken = (user, roles) => {
 // @route POST api/user/register
 // @access public
 const registerUser = asyncHandler(async (req, res) => {
+    /**
+        #swagger.summary = "Register"
+        #swagger.tags = ['User']
+        #swagger.description="Endpoint"
+     */
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
