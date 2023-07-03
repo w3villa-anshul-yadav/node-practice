@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "swagger-auto": "node swagger/swagger.js"
+   
   },
   "author": "",
   "license": "ISC",
@@ -18,7 +19,6 @@
     "mysql2": "^3.4.2",
     "ramda": "^0.29.0",
     "sequelize": "^6.32.1",
-    "winston": "^3.9.0",
     "swagger-autogen": "^2.23.4",
     "swagger-ui-express": "^4.6.3"
   }
