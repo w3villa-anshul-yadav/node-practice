@@ -22,12 +22,12 @@ const noTaskFound = asyncHandler(async (req, res) => {
         });
 
         if (task.length === 0) {
-            logger.error("No Task Found");
+            logger.error("No Task Found","params ",req.params);
             res.status(404).json({ status: false, message: "No Task Found" });
             return true;
         }
     } catch (error) {
-        logger.error(error);
+        logger.error(error.toString());
         res.status(404).json({ status: false, error });
         return true;
     }
@@ -92,7 +92,7 @@ const getTask = asyncHandler(async (req, res) => {
                 });
             }
         } catch (error) {
-            console.error(error);
+            console.error(error.toString());
 
             return res
                 .status(500)
@@ -121,7 +121,7 @@ const createTask = asyncHandler(async (req, res) => {
 
         res.status(200).json(task);
     } catch (error) {
-        logger.error(error);
+        logger.error(error.toString());
         return res
             .status(500)
             .json({ status: false, msg: "Internal server error" });
@@ -175,7 +175,7 @@ const updateTask = asyncHandler(async (req, res) => {
                 });
             }
         } catch (error) {
-            logger.error(error);
+            logger.error(error.toString());
             return res
                 .status(500)
                 .json({ status: false, msg: "Internal server error" });
@@ -221,7 +221,7 @@ const deleteTask = asyncHandler(async (req, res) => {
                 }
             }
         } catch (error) {
-            logger.error(error);
+            logger.error(error.toString());
             
             return res
                 .status(500)

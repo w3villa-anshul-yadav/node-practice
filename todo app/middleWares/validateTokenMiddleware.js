@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const logger = require('../logger');
 
 module.exports = (req, res, next) => {
     let authorizationHeader =
@@ -10,6 +11,7 @@ module.exports = (req, res, next) => {
         jwt.verify(token, process.env.SECTRET_ACCESS_KEY, (err, decode) => {
 
             if (err) {
+                logger.error("user => ",req.user,"Only admins are allowed to do this operation");
                 res.status(401);
                 throw new Error("User is Not Authorized");
             }
@@ -20,6 +22,7 @@ module.exports = (req, res, next) => {
         next();
 
     } else {
+        logger.error("user => ",req.user,"User is not Atuthorized or Token  is Missing");
         res.status(401);
         throw new Error("User is not Atuthorized or Token  is Missing");
     }
