@@ -31,8 +31,7 @@ const getRoles = asyncHandler(async (req, res) => {
 
         res.status(200).json({ status: true, messgae: "Roles ", roles });
     } catch (error) {
-        logger.error(error);
-
+        logger.error(error.toString());
         res.status(400).json({ status: false, error });
     }
 });
@@ -76,7 +75,7 @@ const assignNewRoleToUser = asyncHandler(async (req, res) => {
 
             await user.reload();
 
-            logger.info("Roles Updated Sucessfully");
+            logger.info("Roles Updated Sucessfully","user => " ,req.user ,"role",roles);
 
             res.status(201).json({
                 status: true,
@@ -92,7 +91,7 @@ const assignNewRoleToUser = asyncHandler(async (req, res) => {
             });
         }
     } catch (error) {
-        logger.error(error);
+        logger.error(error.toString());
         return res
             .status(500)
             .json({ status: false, msg: "Internal server error" });
@@ -142,7 +141,7 @@ const removeRole = asyncHandler(async (req, res) => {
             await user.reload();
 
             if (roleNotExistCount > 0) {
-                logger.info(
+                logger.error(
                     `${roleNotExistCount} does not exist so not removed `
                 );
                 res.status(400).json({
@@ -151,7 +150,7 @@ const removeRole = asyncHandler(async (req, res) => {
                 });
             }
 
-            logger.info("Roles Removed Sucessfully");
+            logger.info("Roles Removed Sucessfully","user => " ,req.user ,"role",roles);
 
             res.status(201).json({
                 status: true,
@@ -167,7 +166,7 @@ const removeRole = asyncHandler(async (req, res) => {
             });
         }
     } catch (error) {
-        logger.error(error);
+        logger.error(error.toString());
         return res
             .status(500)
             .json({ status: false, msg: "Internal server error" });
@@ -209,7 +208,7 @@ const getUserRoles = asyncHandler(async (req, res) => {
                     .json({ status: true, msg: "roles of user ", rolesName });
             }
         } else {
-            logger.error("User does not exist");
+            logger.error("User does not exist","user => " ,req.user );
 
             return res
                 .status(400)
