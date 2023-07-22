@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type='text/css' href="style.css">
+  <title>Socket IO</title>
+</head>
+
+<body>
+
+
+  <div class="ui container">
+    <div class="ui pointing menu ">
+      <a class="item active">
+        Messages
+      </a>
+    </div>
+    <div class="ui  ">
+      <p>
+      <section class="msger">
+        <header class="msger-header">
+          <div class="msger-header-title">
+            <i class="fas fa-comment-alt"></i> Messages
+          </div>
+          <div class="msger-header-options">
+            <span><i class="fas fa-cog"></i></span>
+          </div>
+        </header>
+
+        <main class="msger-chat" id='chat-room'>
+          
+        
+        </main>
+        <form class='msger-inputarea' id='message-form'  >
+          <textarea type="text" clas="msger-input" name='body'rows='1'  placeholder="Enter your message..." id='userInput'></textarea>
+          <input type="submit" value="Send" class="msger-send-btn">
+        </form>
+      </section>
+      </p>
+    </div>
+
+  </div>
+
+  <script src='/socket.io/socket.io.js'></script>
+  <script src='/index.js'>
+
+
+  </script>
+</body>
+
+</html>
